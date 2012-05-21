@@ -17,6 +17,7 @@
   		var empty_array=new Array();
   		localStorage.setItem('douban_banlist', JSON.stringify(empty_array));
 		}
+	var datatypehash={3043:"推荐单曲",1025:"上传照片",1026:"相册推荐",1013:"推荐小组话题",1018:"我说",1015:"推荐/新日记",1022:"推荐网址",1012:"推荐书评",1002:"看过电影",3049:"读书笔记",1011:"活动兴趣",3065:"东西",1001:"想读/读过",1003:"想听/听过"};
 //====================================================================
 	//如果是在广播界面
 	if(ifupdate_url){
@@ -94,7 +95,7 @@
 	var reshare_btn=$("div.actions a.btn-reshare");
 	reshare_btn.each(function(){
 		var hd=$(this).parent().parent().parent().parent();
-		var user_url=hd.find("div.hd a").attr("href");
+		var user_url=hd.find("div.hd>a").attr("href");
 		if(user_url==undefined){
 
 		}else{
@@ -106,13 +107,17 @@
 	ban_temply_btn=$("a.ban_temply_btn");
 	ban_temply_btn.click(function(event){
 		
+		//这里的代码逻辑没有任何问题，只在有HD的情况下出现
+		//功能按钮，并抽取用户信息，问题出在过滤那部分
 		var hd=$(this).parent().parent().parent().parent();
 		//console.log("谁发起的该点击？"+hd.html());
-		var user_url=hd.find("div.hd a").attr("href");
+		var message_url=hd.find("div.bd a:eq(1)").attr("href");
+		var user_url=hd.find("div.hd>a").attr("href");
 		var user_uid=user_url.slice(29,-1);
-		var user_name=hd.find("div.hd a").attr("title");
-		var user_icon=hd.find("div.hd a img").attr("src");
-		var data_type=hd.attr("data-target-type");
+		var user_name=hd.find("div.hd>a").attr("title");
+		var user_icon=hd.find("div.hd>a>img").attr("src");
+		var data_type=hd.attr("data-object-kind");
+		console.log(message_url);
 		console.log(data_type);
 		console.log(user_url);
 		console.log(user_uid);
@@ -136,13 +141,18 @@
 //实际的隐藏工作的核心代码
 jQuery.each(banlist,function(index, user){
 //console.log('banstats-name: ', name);
-var people=$("div.status-item a[href*='"+user.url+"']");
-people.parent().parent().parent("[data-target-type='"+user.data_type+"']").hide();
+//精确定位到用户的超链接而非头像处
+var people=$("div.status-item p.text a[href*='"+user.url+"']");
+//console.log(people.parent().parent().parent().html());
+//people.parent().parent().parent().parent(['data-object-kind=1022']).hide();
+people.parent().parent().parent().parent("[data-object-kind='"+user.data_type+"']:gt(0)").hide();
 
 //Add hyplink to 过滤器名单
 	var name_img="<p><img src='"+user.icon+"'>";
 	var name_link="<a href='"+user.url+"'>"+user.name+"</a>";
-	var data_type="&nbsp;只屏蔽了该用户的<span>"+user.data_type+"</span>"
+	var action=datatypehash[user.data_type]==undefined?user.data_type:datatypehash[user.data_type];
+	console.log(action);
+	var data_type="&nbsp;只屏蔽了该用户的<span>"+action+"</span>"
 	var clear_oneperson_ban="<a class='clear_oneperson_ban'>X</a></p>";
 	ban_list_content.prepend(name_img+name_link+data_type+clear_oneperson_ban);      
 
