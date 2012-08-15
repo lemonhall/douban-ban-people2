@@ -145,13 +145,14 @@ jQuery.each(banlist,function(index, user){
 var people=$("div.status-item p.text a[href*='"+user.url+"']");
 //console.log(people.parent().parent().parent().html());
 //people.parent().parent().parent().parent(['data-object-kind=1022']).hide();
-people.parent().parent().parent().parent("[data-object-kind='"+user.data_type+"']:gt(0)").hide();
+//console.log(people.parent().parent().parent().parent());
+people.parent().parent().parent().parent("[data-object-kind='"+user.data_type+"']").hide();
 
 //Add hyplink to 过滤器名单
 	var name_img="<p><img src='"+user.icon+"'>";
 	var name_link="<a href='"+user.url+"'>"+user.name+"</a>";
 	var action=datatypehash[user.data_type]==undefined?user.data_type:datatypehash[user.data_type];
-	console.log(action);
+	//console.log(action);
 	var data_type="&nbsp;只屏蔽了该用户的<span>"+action+"</span>"
 	var clear_oneperson_ban="<a class='clear_oneperson_ban'>X</a></p>";
 	ban_list_content.prepend(name_img+name_link+data_type+clear_oneperson_ban);      
